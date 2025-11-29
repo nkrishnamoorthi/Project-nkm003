@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Knowledge Base</title>
+    <style>
+        /* 1. Global Minimalist Reset and Typography */
+        :root {
+            --color-white: #ffffff;
+            --color-light-gray: #f5f5f5;
+            --color-subtle-gray: #e0e0e0;
+            --color-dark-text: #2c3e50;
+            --color-accent: #3498db; /* Light Blue for buttons */
+            --color-viewpoints-bg: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-white);
+            color: var(--color-dark-text);
+            line-height: 1.6;
+        }
+
+        /* 2. Page Structure (Two-Column Layout) */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 300px;
+            padding: 20px 0;
+            background-color: var(--color-light-gray);
+            border-right: 1px solid var(--color-subtle-gray);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar h2 {
+            padding: 0 20px;
+            margin-top: 0;
+            font-size: 1.2em;
+            color: var(--color-dark-text);
+            border-bottom: 1px solid var(--color-subtle-gray);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Search/Filter */
+        #search-input {
+            width: calc(100% - 40px);
+            padding: 8px 10px;
+            margin: 0 20px 15px 20px;
+            border: 1px solid var(--color-subtle-gray);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.9em;
+        }
+        
+        /* Topic List */
+        .topic-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .topic-list li a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: var(--color-dark-text);
+            transition: background-color 0.15s ease;
+            cursor: pointer;
+        }
+
+        .topic-list li a:hover,
+        .topic-list li a.active {
+            background-color: var(--color-subtle-gray);
+        }
+
+        /* Main Content Area Styling */
+        .main-content {
+            margin-left: 300px; /* Offset for the fixed sidebar */
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .content-wrapper {
+            max-width: 800px; /* Optimal reading width */
+            margin: 0 auto;
+        }
+
+        /* 3. Knowledge Entry Display - Styling */
+        /* Topic Title */
+        #topic-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--color-subtle-gray);
+            padding-bottom: 10px;
+        }
+
+        /* Detailed Content */
+        #detailed-content p {
+            margin-bottom: 1.5em;
+        }
+
+        #detailed-content ul, #detailed-content ol {
+            padding-left: 20px;
+            margin-bottom: 1.5em;
+        }
+
+        /* Code Blocks */
+        pre {
+            background-color: var(--color-light-gray);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.9em;
+            border: 1px solid var(--color-subtle-gray);
+        }
+
+        /* Resource Links */
+        .resource-links {
+            margin: 30px 0;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--color-subtle-gray);
+        }
+
+        .resource-links a {
+            display: inline-block;
+            padding: 8px 15px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            border-radius: 20px;
+            transition: background-color 0.2s, color 0.2s;
+            font-size: 0.9em;
+        }
+
+        .resource-links a:hover {
+            background-color: var(--color-accent);
+            color: var(--color-white);
+        }
+
+        /* Personal Viewpoints Panel */
+        .viewpoints-panel {
+            background-color: var(--color-viewpoints-bg);
+            border: 1px solid var(--color-subtle-gray);
+            padding: 25px;
+            border-radius: 4px;
+            margin-top: 40px;
+        }
+
+        .viewpoints-panel h3 {
+            font-size: 1.4em;
+            margin-top: 0;
+            font-weight: 600;
+            color: var(--color-accent);
+            position: relative;
+            padding-left: 30px;
+        }
+
+        /* Simple icon simulation */
+        .viewpoints-panel h3::before {
+            content: '💡'; /* Lightbulb icon */
+            position: absolute;
+            left: 0;
+            top: -2px;
+            font-size: 1.2em;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--color-subtle-gray);
+                max-height: 50vh; /* Allow scrolling on smaller screens */
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .sidebar h2 {
+                display: none; /* Hide title on mobile to save space */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Topics</h2>
+            <input type="text" id="search-input" placeholder="Search topics...">
+            <ul class="topic-list" id="topic-list">
+                <li><a href="#" data-topic-id="1" class="active">Apex Governor Limits</a></li>
+                <li><a href="#" data-topic-id="2">React State Management Hooks</a></li>
+                <li><a href="#" data-topic-id="3">The Haber Process</a></li>
+                <li><a href="#" data-topic-id="4">Minimalist CSS Layouts</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="content-wrapper">
+                <h1 id="topic-title"></h1>
+                
+                <div id="detailed-content">
+                    </div>
+
+                <div class="resource-links" id="resource-links">
+                    </div>
+
+                <div class="viewpoints-panel">
+                    <h3>My Viewpoints / Insights</h3>
+                    <p id="viewpoints-content">
+                        </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA SIMULATION ---
+        // In a real application, this would come from an API call or JSON file.
+        const knowledgeBase = [
+            {
+                id: 1,
+                title: "Apex Governor Limits",
+                content: `
+                    <p>Apex Governor Limits are strict, enforced constraints in the Salesforce multitenant environment. They ensure that no single piece of code or process monopolizes shared resources. If an Apex transaction exceeds any limit, a runtime exception is thrown that cannot be handled.</p>
+                    <p>Key Per-Transaction Limits:</p>
+                    <ul>
+                        <li>SOQL Queries: 100 (Synchronous) / 200 (Asynchronous)</li>
+                        <li>DML Statements: 150</li>
+                        <li>Records Processed by DML: 10,000</li>
+                    </ul>
+                    <p>Always remember to bulkify your code to avoid hitting these limits in mass data scenarios.</p>
+                    <pre><code>// Example of an un-bulkified loop (BAD PRACTICE)
+for (Account acc : accounts) {
+    update acc; // DML inside a loop! Fails quickly.
+}</code></pre>
+                `,
+                links: [
+                    { label: "Salesforce Official Cheatsheet", url: "https://developer.salesforce.com/docs/..." },
+                    { label: "Apex Bulkification Guide (Video)", url: "https://youtube.com/..." },
+                    { label: "Trailhead Module on Governors", url: "#" }
+                ],
+                viewpoints: "The biggest takeaway is the 50,000 record limit for SOQL results—this is why we must always use Database.getQueryLocator() for Batch Apex. Always check asynchronous limits before designing scheduled jobs."
+            },
+            {
+                id: 2,
+                title: "React State Management Hooks",
+                content: "<p>The core hooks for state management in React are <code>useState</code> for simple component state and <code>useReducer</code> for more complex, application-level state. Context API is used to pass state deep down the component tree without prop drilling.</p><p>Key use cases for <code>useReducer</code>: <ul><li>When state logic is complex.</li><li>When the next state depends on the previous state.</li><li>When the state update logic needs to be tested in isolation.</li></ul></p>",
+                links: [
+                    { label: "React Docs: useState", url: "#" },
+                    { label: "A guide to useReducer", url: "#" }
+                ],
+                viewpoints: "I find useReducer makes debugging easier for large forms, but often creates too much boilerplate for simple on/off toggles. Stick to Context + useReducer for global app state."
+            }
+        ];
+
+        // --- DYNAMIC LOADING LOGIC ---
+        const topicTitleEl = document.getElementById('topic-title');
+        const detailedContentEl = document.getElementById('detailed-content');
+        const resourceLinksEl = document.getElementById('resource-links');
+        const viewpointsContentEl = document.getElementById('viewpoints-content');
+        const topicListEl = document.getElementById('topic-list');
+
+        // Function to render a selected topic
+        function loadTopic(topic) {
+            // Update Title
+            topicTitleEl.textContent = topic.title;
+
+            // Update Detailed Content (allows HTML, like pre/ul/li)
+            detailedContentEl.innerHTML = topic.content;
+
+            // Update Resource Links
+            resourceLinksEl.innerHTML = topic.links.map(link => 
+                `<a href="${link.url}" target="_blank">${link.label}</a>`
+            ).join('');
+
+            // Update Viewpoints
+            viewpointsContentEl.textContent = topic.viewpoints;
+        }
+
+        // Event listener for the sidebar list
+        topicListEl.addEventListener('click', (event) => {
+            const link = event.target.closest('a');
+            if (link) {
+                event.preventDefault();
+                
+                // Remove 'active' class from all links
+                document.querySelectorAll('.topic-list a').forEach(a => a.classList.remove('active'));
+                
+                // Add 'active' class to the clicked link
+                link.classList.add('active');
+
+                // Load the new content
+                const topicId = parseInt(link.dataset.topicId);
+                const topic = knowledgeBase.find(t => t.id === topicId);
+                
+                if (topic) {
+                    loadTopic(topic);
+                }
+            }
+        });
+
+        // Load the first topic by default on page load
+        const defaultTopic = knowledgeBase[0];
+        if (defaultTopic) {
+            loadTopic(defaultTopic);
+        }
+
+        // --- SEARCH/FILTER LOGIC ---
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const filter = e.target.value.toLowerCase();
+            const topics = topicListEl.getElementsByTagName('li');
+
+            Array.from(topics).forEach(li => {
+                const topicText = li.textContent.toLowerCase();
+                if (topicText.includes(filter)) {
+                    li.style.display = 'block';
+                } else {
+                    li.style.display = 'none';
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
